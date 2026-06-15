@@ -1,0 +1,297 @@
+```javascript id="xjlwm0"
+let characters =
+JSON.parse(localStorage.getItem("mangaCharacters"))
+|| [];
+
+function openModal(){
+    document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("modal").style.display = "none";
+}
+
+function updateSlider(stat){
+
+    const slider =
+    document.getElementById(stat);
+
+    const value =
+    document.getElementById(stat + "Value");
+
+    value.innerText = slider.value;
+}
+
+function saveCharacter(){
+
+    const character = {
+
+        id:Date.now(),
+
+        name:document.getElementById("name").value,
+        age:document.getElementById("age").value,
+        role:document.getElementById("role").value,
+        powerType:document.getElementById("powerType").value,
+        image:document.getElementById("image").value,
+
+        appearance:document.getElementById("appearance").value,
+        personality:document.getElementById("personality").value,
+        backstory:document.getElementById("backstory").value,
+        powers:document.getElementById("powers").value,
+        relationships:document.getElementById("relationships").value,
+
+        stats:{
+            strength:document.getElementById("strength").value,
+            speed:document.getElementById("speed").value,
+            intelligence:document.getElementById("intelligence").value,
+            magic:document.getElementById("magic").value,
+            stamina:document.getElementById("stamina").value
+        }
+    };
+
+    characters.push(character);
+
+    localStorage.setItem(
+        "mangaCharacters",
+        JSON.stringify(characters)
+    );
+
+    renderCharacters();
+
+    closeModal();
+}
+
+function createStat(name,value){
+
+    return `
+    <div class="stat">
+
+        <div class="stat-top">
+            <span>${name}</span>
+            <span>${value}/10</span>
+        </div>
+
+        <div class="bar">
+            <div
+            class="fill"
+            style="width:${value * 10}%">
+            </div>
+        </div>
+
+    </div>
+    `;
+}
+
+function renderCharacters(){
+
+    const grid =
+    document.getElementById("characterGrid");
+
+    const search =
+    document.getElementById("search")
+    .value
+    .toLowerCase();
+
+    grid.innerHTML = "";
+
+    characters
+    .filter(character =>
+        character.name.toLowerCase().includes(search)
+    )
+    .forEach(character => {
+
+        grid.innerHTML += `
+        <div
+        class="card"
+        onclick="openProfile(${character.id})">
+
+            ${
+                character.image
+                ?
+                `<img src="${character.image}">`
+                :
+                ""
+            }
+
+            <div class="card-content">
+
+                <h2>${character.name}</h2>
+
+                <div class="power-type">
+                    ${character.role}
+                    •
+                    ${character.powerType}
+                </div>
+
+                ${createStat(
+                    "STR",
+                    character.stats.strength
+                )}
+
+                ${createStat(
+                    "SPD",
+                    character.stats.speed
+                )}
+
+                ${createStat(
+                    "INT",
+                    character.stats.intelligence
+                )}
+
+                ${createStat(
+                    "MAG",
+                    character.stats.magic
+                )}
+
+                ${createStat(
+                    "STA",
+                    character.stats.stamina
+                )}
+
+            </div>
+
+        </div>
+        `;
+    });
+}
+
+function toggleSection(id){
+
+    const section =
+    document.getElementById(id);
+
+    if(section.style.display === "block"){
+        section.style.display = "none";
+    }
+
+    else{
+        section.style.display = "block";
+    }
+}
+
+function openProfile(id){
+
+    const character =
+    characters.find(c => c.id === id);
+
+    const profile =
+    document.getElementById("profileContent");
+
+    profile.innerHTML = `
+
+    <span
+    class="close"
+    onclick="closeProfile()">
+    ✖
+    </span>
+
+    <h1>${character.name}</h1>
+
+    ${
+        character.image
+        ?
+        `<img
+        src="${character.image}"
+        class="profile-image">`
+        :
+        ""
+    }
+
+    <p>
+    <b>Age:</b>
+    ${character.age}
+    </p>
+
+    <p>
+    <b>Role:</b>
+    ${character.role}
+    </p>
+
+    <p>
+    <b>Power Type:</b>
+    ${character.powerType}
+    </p>
+
+    <h2 class="section-title">Stats</h2>
+
+    ${createStat("Strength", character.stats.strength)}
+    ${createStat("Speed", character.stats.speed)}
+    ${createStat("Intelligence", character.stats.intelligence)}
+    ${createStat("Magic", character.stats.magic)}
+    ${createStat("Stamina", character.stats.stamina)}
+
+    <div
+    class="toggle"
+    onclick="toggleSection('appearanceSection')">
+    ▶ Appearance
+    </div>
+
+    <div
+    class="toggle-content"
+    id="appearanceSection">
+    ${character.appearance}
+    </div>
+
+    <div
+    class="toggle"
+    onclick="toggleSection('personalitySection')">
+    ▶ Personality
+    </div>
+
+    <div
+    class="toggle-content"
+    id="personalitySection">
+    ${character.personality}
+    </div>
+
+    <div
+    class="toggle"
+    onclick="toggleSection('backstorySection')">
+    ▶ Backstory
+    </div>
+
+    <div
+    class="toggle-content"
+    id="backstorySection">
+    ${character.backstory}
+    </div>
+
+    <div
+    class="toggle"
+    onclick="toggleSection('powersSection')">
+    ▶ Powers
+    </div>
+
+    <div
+    class="toggle-content"
+    id="powersSection">
+    ${character.powers}
+    </div>
+
+    <div
+    class="toggle"
+    onclick="toggleSection('relationshipsSection')">
+    ▶ Relationships
+    </div>
+
+    <div
+    class="toggle-content"
+    id="relationshipsSection">
+    ${character.relationships.replaceAll("\n","<br>")}
+    </div>
+    `;
+
+    document.getElementById(
+        "profileModal"
+    ).style.display = "flex";
+}
+
+function closeProfile(){
+
+    document.getElementById(
+        "profileModal"
+    ).style.display = "none";
+}
+
+renderCharacters();
+```
